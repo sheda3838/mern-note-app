@@ -8,7 +8,6 @@ function NoteList({ notes }) {
 
   return (
     <div>
-      NoteList
       {notes.map((note) => (
         <NoteCard key={note._id} note={note} />
       ))}

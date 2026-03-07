@@ -1,9 +1,62 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import NoteList from "../components/NoteList";
 
 function DashboardPage() {
+  const { api, user } = useAuth();
+
+  const [myNotes, setMyNotes] = useState([]);
+  const [sharedNotes, setSharedNotes] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const { data } = await api.get("/note/"); // fetch all notes
+        const notes = data.notes || [];
+
+        // split My Notes and Shared Notes
+        const my = notes.filter((note) => note.owner.toString() === user._id);
+        const shared = notes.filter(
+          (note) =>
+            note.owner.toString() !== user._id &&
+            note.collaborators.includes(user._id),
+        );
+
+        setMyNotes(my);
+        setSharedNotes(shared);
+      } catch (error) {
+        setError(error.response?.data?.message || "Failed to fetch notes");
+      }
+    };
+
+    fetchNotes();
+  }, [api, user]);
+
   return (
-    <div>DashboardPage</div>
-  )
+    <div>
+      <h1>Dashboard</h1>
+      {error && <p>{error}</p>}
+
+      <section>
+        <h2>My Notes</h2>
+        {myNotes.length !== 0 ? (
+          <NoteList notes={myNotes} />
+        ) : (
+          <p>My notes are empty</p>
+        )}
+      </section>
+
+      <section>
+        <h2>Shared Notes</h2>
+        {sharedNotes.length !== 0 ? (
+          <NoteList notes={sharedNotes} />
+        ) : (
+          <p>Shared notes are empty</p>
+        )}
+      </section>
+    </div>
+  );
 }
 
-export default DashboardPage
+export default DashboardPage;

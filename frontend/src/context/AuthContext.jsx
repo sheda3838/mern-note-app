@@ -1,44 +1,62 @@
-import { createContext, useContext, useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import api from "../api/axios"
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const navigate = useNavigate()
-  const [user, setUser] = useState(() => {
-    //load user from localStorage on initial load
-    const storedUser = localStorage.getItem("user")
-    return storedUser ? JSON.parse(storedUser) : null
-  })
+  const navigate = useNavigate();
 
-  //save user to localStorage whenever it changes
+  // load user from localStorage on initial load
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  // save user to localStorage whenever it changes
   useEffect(() => {
     if (user) {
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("user", JSON.stringify(user));
     } else {
-      localStorage.removeItem("user")
+      localStorage.removeItem("user");
     }
-  }, [user])
+  }, [user]);
 
-  //login function
+  // login function
   const login = (userData) => {
-    setUser(userData)
-    navigate("/dashboard") // redirect after login
-  }
+    setUser(userData);
+    navigate("/dashboard"); // redirect after login
+  };
 
-  //logout function
+  // logout function
   const logout = () => {
-    setUser(null)
-    navigate("/login") // redirect after logout
-  }
+    setUser(null);
+    navigate("/login"); // redirect after logout
+  };
+
+  // Axios instance with JWT in headers
+  const api = useMemo(() => {
+    const instance = axios.create({
+      baseURL: "http://localhost:5000/api",
+    });
+
+    // attach token if user exists
+    instance.interceptors.request.use((config) => {
+      if (user?.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
+      return config;
+    });
+
+    return instance;
+  }, [user]); // rebuild instance if user changes
 
   return (
     <AuthContext.Provider value={{ user, setUser, login, logout, api }}>
       {children}
     </AuthContext.Provider>
-  )
-}
+  );
+};
 
-//custom hook to use context
-export const useAuth = () => useContext(AuthContext)
+// custom hook to use context
+export const useAuth = () => useContext(AuthContext);
