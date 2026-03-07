@@ -1,5 +1,6 @@
 import Note from "../models/Note.js";
 
+//create a new note
 export const createNote = async (req, resp) => {
   const { title, content, collaborators } = req.body;
   const owner = req.user.id;
@@ -22,3 +23,55 @@ export const createNote = async (req, resp) => {
     resp.status(500).json({ message: "Server error" });
   }
 };
+
+//get all notes for th user
+export const getNotes = async (req, resp) => {
+  const userId = req.user.id;
+
+  //checks user from JWT
+  if (!userId) return resp.status(400).json({ message: "Owner not found" });
+
+  try {
+    //notes owned by user OR where user is a collaborator
+    const notes = await Note.find({
+      $or: [{ owner: userId }, { collaborators: userId }],
+    }).sort({ updatedAt: -1 }); // newest first
+
+    if (!notes) return resp.status(201).json({ message: "No notes found" });
+
+    return resp.status(201).json({ notes });
+  } catch (error) {
+    console.log(error);
+    resp.status(500).json({ message: "Server error" });
+  }
+};
+
+//get note by id
+export const getNoteById = async (req, resp) => {
+  const userId = req.user.id;
+  const noteId = req.params.id;
+
+  //checks user from JWT
+  if (!userId || !noteId)
+    return resp.status(400).json({ message: "Incomplete credentials" });
+
+  try {
+    //fetch note from db
+    const note = await Note.findOne({ noteId });
+    if (!note) return resp.status(404).json({ message: "Note not found" });
+
+    //check permissions (user should be at least an owner or a collobarator)
+    if (
+      note.owner.toString() !== userId &&
+      !note.collaborators.includes(userId)
+    ) {
+      return resp.status(403).json({ message: "Not authorized" });
+    }
+
+    resp.status(200).json({ note });
+  } catch (error) {
+    console.log(error);
+    resp.status(500).json({ message: "Server error" });
+  }
+};
+
