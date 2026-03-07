@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import { protect } from "./middleware/authMiddleware.js";
 
 dotenv.config();
 connectDB();
@@ -22,8 +23,8 @@ app.get("/", (req, res) => {
 
 // auth routes
 app.use("/api/auth", authRoutes);
-app.use("/api/note", noteRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/note", protect, noteRoutes);
+app.use("/api/users", protect, userRoutes);
 
 // start server
 const PORT = process.env.PORT || 5000;

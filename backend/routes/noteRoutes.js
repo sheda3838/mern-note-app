@@ -9,17 +9,16 @@ import {
   addCollaborator,
   removeCollaborator,
 } from "../controllers/noteController.js";
-import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect, createNote);
-router.get("/", protect, getNotes);
-router.patch("/:id", protect, updateNote);
-router.delete("/:id", protect, deleteNote);
-router.get("/search", protect, searchNotes);
-router.post("/:id/collaborators", protect, addCollaborator);
-router.delete("/:id/collaborators", protect, removeCollaborator);
-router.get("/:id", protect, getNoteById);
+router.post("/", createNote);
+router.get("/", getNotes);
+router.patch("/:id", updateNote);
+router.delete("/:id", deleteNote);
+router.get("/search", searchNotes);
+router.post("/:id/collaborators", addCollaborator);
+router.delete("/:id/collaborators", removeCollaborator);
+router.get("/:id", getNoteById);
 
 export default router;
