@@ -6,6 +6,7 @@ const noteSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength:150,
     },
     content: {
       type: String,
@@ -14,6 +15,7 @@ const noteSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required:true,
     },
     collaborators: [
       {
