@@ -12,7 +12,6 @@ function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", { email, password });
       login(data); // update context
-      console.log("login success");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
