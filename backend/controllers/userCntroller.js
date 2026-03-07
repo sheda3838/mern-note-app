@@ -1,12 +1,13 @@
 import User from "../models/User.js";
 
-//get all useres except current user
+//get all useres except current logged in user
 export const getUsers = async (req, resp) => {
   const userId = req.user.id;
 
   try {
-    const users = await User.find({ _id: { $ne: userId } }).select("name email");
-
+    const users = await User.find({ _id: { $ne: userId } })
+      .select("name email")
+      .sort({ name: 1 });
 
     resp.status(200).json({ users });
   } catch (error) {

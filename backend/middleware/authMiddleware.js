@@ -15,17 +15,24 @@ export const protect = async (req, resp, next) => {
       //verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      //attach user to req
-      req.user = { id: decoded.id };
+      //get user from database
+      const user = await User.findById(decoded.id).select("_id");
 
-      next(); // move to controller
+      if (!user) {
+        return resp.status(401).json({message: "User not found"});
+      }
+
+      //attach user to request
+      req.user = user;
+
+      next();
     } catch (error) {
       console.error(error);
-      resp.status(401).json({ message: "Not authorized, token failed" });
+      return resp.status(401).json({message: "Not authorized, token failed"});
     }
   }
 
   if (!token) {
-    resp.status(401).json({ message: "Not authorized, no token" });
+    return resp.status(401).json({message: "Not authorized, no token"});
   }
 };
