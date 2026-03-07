@@ -5,6 +5,10 @@ import { generateToken } from "../utils/generateToken.js";
 export const registerUser = async (req, resp) => {
   const { name, email, password } = req.body;
 
+  if (!name || !email || !password) {
+    return resp.status(400).json({ message: "Please provide all fields" });
+  }
+
   try {
     //check if user exists
     const userExists = await User.findOne({ email });
@@ -41,20 +45,24 @@ export const registerUser = async (req, resp) => {
 export const loginUser = async (req, resp) => {
   const { email, password } = req.body;
 
+  if (!name || !email) {
+    return resp.status(400).json({ message: "Please provide all fields" });
+  }
+
   try {
     //find user
     const user = await User.findOne({ email });
-    if (!user) return resp.status(400).json({ message: "User not found" });
+    if (!user) return resp.status(400).json({ message: "Invalid email or password" });
 
     //check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return resp.status(400).json({ message: "Incorrect email or password" });
+      return resp.status(400).json({ message: "Invalid email or password" });
 
     // create JWT
     const token = generateToken(user._id);
 
-    resp.json({
+    resp.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
