@@ -13,7 +13,7 @@ export const createNote = async (req, resp) => {
       owner,
     });
 
-    return resp.status(201).json(note.toObject());
+    return resp.status(201).json(note);
   } catch (error) {
     console.log(error);
     resp.status(500).json({ message: "Server error" });
@@ -50,7 +50,9 @@ export const getNoteById = async (req, resp) => {
       return resp.status(400).json({ message: "Incomplete credentials" });
 
     //fetch note from db
-    const note = await Note.findById(noteId);
+    const note = await Note.findById(noteId)
+      .populate("owner", "name email")
+      .populate("collaborators", "name email");
     if (!note) return resp.status(404).json({ message: "Note not found" });
 
     //check permissions (user should be at least an owner or a collobarator)
@@ -138,18 +140,17 @@ export const searchNotes = async (req, resp) => {
 
     const notes = await Note.find({
       $and: [
-        { $text: {$search: query}},
-        { $or: [{owner: userId}, {collaborators: userId}] },
+        { $text: { $search: query } },
+        { $or: [{ owner: userId }, { collaborators: userId }] },
       ],
-    }).sort({updatedAt: -1});
+    }).sort({ updatedAt: -1 });
 
-    resp.status(200).json({notes});
+    resp.status(200).json({ notes });
   } catch (error) {
     console.log(error);
-    resp.status(500).json({message: "Server error"});
+    resp.status(500).json({ message: "Server error" });
   }
 };
-
 
 //add collobarator for an exisitng note
 export const addCollaborator = async (req, resp) => {
@@ -161,28 +162,35 @@ export const addCollaborator = async (req, resp) => {
     const note = await Note.findById(noteId);
 
     if (!note) {
-      return resp.status(404).json({message: "Note not found"});
+      return resp.status(404).json({ message: "Note not found" });
     }
 
     //only owner can add collaborators
     if (note.owner.toString() !== userId) {
-      return resp.status(403).json({message: "Only the owner can add collaborators"});
+      return resp
+        .status(403)
+        .json({ message: "Only the owner can add collaborators" });
+    }
+
+    if (collaboratorId === userId) {
+      return resp
+        .status(400)
+        .json({ message: "Owner cannot be a collaborator" });
     }
 
     //avoid duplicates
     if (note.collaborators.includes(collaboratorId)) {
-      return resp.status(400).json({message: "User already a collaborator"});
+      return resp.status(400).json({ message: "User already a collaborator" });
     }
 
     note.collaborators.push(collaboratorId);
 
     await note.save();
 
-    resp.status(200).json({message: "Collaborator added", note});
-
+    resp.status(200).json({ message: "Collaborator added", note });
   } catch (error) {
     console.log(error);
-    resp.status(500).json({message: "Server error"});
+    resp.status(500).json({ message: "Server error" });
   }
 };
 
@@ -196,24 +204,25 @@ export const removeCollaborator = async (req, resp) => {
     const note = await Note.findById(noteId);
 
     if (!note) {
-      return resp.status(404).json({message: "Note not found"});
+      return resp.status(404).json({ message: "Note not found" });
     }
 
     //only owner can remove collaborators
     if (note.owner.toString() !== userId) {
-      return resp.status(403).json({message: "Only the owner can remove collaborators"});
+      return resp
+        .status(403)
+        .json({ message: "Only the owner can remove collaborators" });
     }
 
     note.collaborators = note.collaborators.filter(
-      (id) => id.toString() !== collaboratorId
+      (id) => id.toString() !== collaboratorId,
     );
 
     await note.save();
 
-    resp.status(200).json({message: "Collaborator removed", note});
-
+    resp.status(200).json({ message: "Collaborator removed", note });
   } catch (error) {
     console.log(error);
-    resp.status(500).json({message: "Server error"});
+    resp.status(500).json({ message: "Server error" });
   }
 };
