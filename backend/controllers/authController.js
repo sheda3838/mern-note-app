@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { generateToken } from "../utils/generateToken.js";
 
 export const registerUser = async (req, resp) => {
   const { name, email, password } = req.body;
@@ -24,9 +24,7 @@ export const registerUser = async (req, resp) => {
     });
 
     // create JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = generateToken(user._id);
 
     resp.status(201).json({
       _id: user._id,
@@ -54,9 +52,7 @@ export const loginUser = async (req, resp) => {
       return resp.status(400).json({ message: "Incorrect email or password" });
 
     // create JWT
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = generateToken(user._id);
 
     resp.json({
       _id: user._id,
