@@ -4,11 +4,10 @@ import Note from "../models/Note.js";
 export const createNote = async (req, resp) => {
   const { title, content, collaborators } = req.body;
   const owner = req.user.id;
-
-  //checks user from JWT
-  if (!owner) return resp.status(400).json({ message: "Owner not found" });
-
   try {
+    //checks user from JWT
+    if (!owner) return resp.status(400).json({ message: "Owner not found" });
+
     //create a new note in db
     const note = await Note.create({
       title,
@@ -27,19 +26,17 @@ export const createNote = async (req, resp) => {
 //get all notes for th user
 export const getNotes = async (req, resp) => {
   const userId = req.user.id;
-
-  //checks user from JWT
-  if (!userId) return resp.status(400).json({ message: "Owner not found" });
-
   try {
+    //checks user from JWT
+    if (!userId) return resp.status(400).json({ message: "User not found" });
     //notes owned by user OR where user is a collaborator
     const notes = await Note.find({
       $or: [{ owner: userId }, { collaborators: userId }],
     }).sort({ updatedAt: -1 }); // newest first
 
-    if (!notes) return resp.status(201).json({ message: "No notes found" });
+    if (!notes) return resp.status(200).json({ message: "No notes found" });
 
-    return resp.status(201).json({ notes });
+    return resp.status(200).json({ notes });
   } catch (error) {
     console.log(error);
     resp.status(500).json({ message: "Server error" });
@@ -51,13 +48,13 @@ export const getNoteById = async (req, resp) => {
   const userId = req.user.id;
   const noteId = req.params.id;
 
-  //checks user from JWT
-  if (!userId || !noteId)
-    return resp.status(400).json({ message: "Incomplete credentials" });
-
   try {
+    //checks user from JWT
+    if (!userId || !noteId)
+      return resp.status(400).json({ message: "Incomplete credentials" });
+
     //fetch note from db
-    const note = await Note.findOne({ noteId });
+    const note = await Note.findById(noteId);
     if (!note) return resp.status(404).json({ message: "Note not found" });
 
     //check permissions (user should be at least an owner or a collobarator)
@@ -75,3 +72,59 @@ export const getNoteById = async (req, resp) => {
   }
 };
 
+//update note
+export const updateNote = async (req, resp) => {
+  const userId = req.user.id;
+  const noteId = req.params.id;
+  const { title, content } = req.body;
+
+  try {
+    const note = await Note.findById(noteId);
+    if (!note) return resp.status(400).json({ message: "Note not found" });
+
+    if (
+      note.owner.toString() !== userId &&
+      !note.collaborators.includes(userId)
+    ) {
+      return resp.status(403).json({ message: "Not authorized" });
+    }
+
+    if (title) note.title = title;
+    if (content) note.content = content;
+
+    await note.save();
+
+    resp.status(200).json({ note });
+  } catch (error) {
+    console.log(error);
+    resp.status(500).json({ message: "Server error" });
+  }
+};
+
+export const deleteNote = async (req, resp) => {
+  const userId = req.user.id;
+  const noteId = req.params.id;
+
+  try {
+    //find the note
+    const note = await Note.findById(noteId);
+
+    if (!note) {
+      return resp.status(404).json({ message: "Note not found" });
+    }
+
+    //check if the logged-in user is the owner
+    if (note.owner.toString() !== userId) {
+      return resp.status(403).json({ message: "Only the owner can delete this note" });
+    }
+
+    //delete the note
+    await note.deleteOne();
+
+    resp.status(200).json({ message: "Note deleted successfully" });
+
+  } catch (error) {
+    console.log(error);
+    resp.status(500).json({ message: "Server error" });
+  }
+};
