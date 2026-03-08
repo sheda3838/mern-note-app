@@ -18,7 +18,7 @@ function RegisterPage() {
         password,
       });
       if (!data) return console.log("An error occured please try again later");
-      login(data); //login immediately
+      login(data.data); //login immediately
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");

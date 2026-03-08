@@ -11,7 +11,7 @@ function LoginPage() {
     e.preventDefault();
     try {
       const { data } = await api.post("/auth/login", { email, password });
-      login(data); // update context
+      login(data.data); // update context
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }

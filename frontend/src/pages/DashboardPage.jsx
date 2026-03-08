@@ -16,7 +16,7 @@ function DashboardPage() {
   const fetchNotes = async () => {
     try {
       const { data } = await api.get("/note/"); // fetch all notes
-      const notes = data.notes || [];
+      const notes = data.data.notes || [];
 
       // split My Notes and Shared Notes
       const my = notes.filter((note) => note.owner.toString() === user._id);
@@ -73,7 +73,7 @@ function DashboardPage() {
       const { data } = await api.get(
         `/note/search?q=${encodeURIComponent(searchQuery)}`,
       );
-      const notes = data.notes || [];
+      const notes = data.data.notes || [];
 
       // Split into My Notes and Shared Notes like before
       const my = notes.filter((note) => note.owner.toString() === user._id);

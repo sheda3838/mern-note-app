@@ -6,14 +6,14 @@ export const registerUser = async (req, resp) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return resp.status(400).json({ message: "Please provide all fields" });
+    return resp.status(400).json({ success: false, message: "Please provide all fields" });
   }
 
   try {
     //check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return resp.status(400).json({ message: "User already exists" });
+      return resp.status(400).json({ success: false, message: "User already exists" });
     }
 
     //hash password
@@ -31,14 +31,18 @@ export const registerUser = async (req, resp) => {
     const token = generateToken(user._id);
 
     resp.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
+      success: true,
+      message: "User registered successfully",
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token,
+      }
     });
   } catch (error) {
     console.log(error);
-    resp.status(500).json({ message: "Server error" });
+    resp.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -46,30 +50,34 @@ export const loginUser = async (req, resp) => {
   const { email, password } = req.body;
 
   if (!password || !email) {
-    return resp.status(400).json({ message: "Please provide all fields" });
+    return resp.status(400).json({ success: false, message: "Please provide all fields" });
   }
 
   try {
     //find user
     const user = await User.findOne({ email });
-    if (!user) return resp.status(400).json({ message: "Invalid email or password" });
+    if (!user) return resp.status(400).json({ success: false, message: "Invalid email or password" });
 
     //check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return resp.status(400).json({ message: "Invalid email or password" });
+      return resp.status(400).json({ success: false, message: "Invalid email or password" });
 
     // create JWT
     const token = generateToken(user._id);
 
     resp.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token,
+      success: true,
+      message: "Login successful",
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        token,
+      }
     });
   } catch (error) {
     console.log(error);
-    resp.status(500).json({ message: "Server error" });
+    resp.status(500).json({ success: false, message: "Server error" });
   }
 };

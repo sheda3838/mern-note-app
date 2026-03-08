@@ -10,7 +10,7 @@ function CollaboratorSelect({ api, collaborators, setCollaborators }) {
     const fetchUsers = async () => {
       try {
         const { data } = await api.get("/users");
-        setAvailableUsers(data.users || []);
+        setAvailableUsers(data.data.users || []);
       } catch (err) {
         console.error("Failed to fetch users", err);
       }

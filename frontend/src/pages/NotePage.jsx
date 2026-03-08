@@ -22,7 +22,7 @@ function NotePage() {
       const fetchNote = async () => {
         try {
           const { data } = await api.get(`/note/${id}`);
-          const fetchedNote = data.note;
+          const fetchedNote = data.data.note;
           setTitle(fetchedNote.title);
           setContent(fetchedNote.content);
           
