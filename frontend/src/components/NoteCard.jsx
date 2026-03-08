@@ -2,12 +2,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 function NoteCard({ note, onDelete, currentUserId }) {
-  //snippet of content by truncating
-  const snippet =
-    note.content.length > 50 ? note.content.slice(0, 50) + "..." : note.content;
-
   const navigate = useNavigate();
-  const isOwner = note.owner.toString() === currentUserId; // check ownership
+  const isOwner = note.owner.toString() === currentUserId;
+
+  // helper to strip HTML
+  const stripHtml = (html) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+
+  // snippet from stripped content
+  const textContent = stripHtml(note.content);
+  const snippet =
+    textContent.length > 50 ? textContent.slice(0, 50) + "..." : textContent;
 
   return (
     <div className="m-2 p-2 bg-green-100 w-80">
