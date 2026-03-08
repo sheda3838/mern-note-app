@@ -55,7 +55,7 @@ function NotePage() {
 
     const collabIds = collaborators.map((c) => c._id);
 
-    // Optimization: Check if nothing changed
+    //check if nothing changed
     if (isEditMode && originalNote) {
       const isTitleSame = title === originalNote.title;
       const isContentSame = content === originalNote.content;
@@ -64,7 +64,7 @@ function NotePage() {
         collabIds.every((id) => originalNote.collaborators.includes(id));
 
       if (isTitleSame && isContentSame && isCollabsSame) {
-        // Nothing changed, return to dashboard immediately
+        // if nothing changed return to dashboard
         navigate("/dashboard");
         return;
       }
@@ -92,47 +92,85 @@ function NotePage() {
   const isOwner = !isEditMode || noteOwner === user?._id;
 
   return (
-    <div className="p-4">
-      <h1>{id === "new" ? "Add New Note" : "Edit Note"}</h1>
-      {error && <p className="text-red-500">{error}</p>}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+      {/* sticky header */}
+      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm sticky top-0 z-20 transition-colors">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+              title="Back to Dashboard"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+              </svg>
+            </button>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">
+              {id === "new" ? "Create Note" : "Edit Note"}
+            </span>
+          </div>
 
-      <input
-        type="text"
-        placeholder="Note title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="border p-2 w-full mb-4 rounded"
-      />
+          <button
+            onClick={handleSubmit}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-5 rounded-full transition-colors shadow-sm ring-1 ring-inset ring-blue-700/10 flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="size-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Save
+          </button>
+        </div>
+      </header>
 
-      <RichTextEditor value={content} onChange={setContent} />
+      {/* main reading container */}
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {error && (
+          <div className="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm" role="alert">
+            <p className="font-bold">Error</p>
+            <p>{error}</p>
+          </div>
+        )}
 
-      {isOwner && (
-        <CollaboratorSelect 
-          api={api} 
-          collaborators={collaborators} 
-          setCollaborators={setCollaborators} 
-        />
-      )}
+        <div className="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 rounded-2xl p-6 sm:p-10 transition-colors">
+          {/* headless title input */}
+          <input
+            type="text"
+            placeholder="Note title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white bg-transparent border-none outline-none focus:ring-0 placeholder-gray-400 dark:placeholder-gray-500 mb-8 p-0"
+          />
 
-      {!isOwner && collaborators.length > 0 && (
-        <div className="mb-4">
-          <label className="block mb-2 font-medium">Collaborators</label>
-          <div className="flex flex-wrap gap-2">
-            {collaborators.map((c) => (
-              <span key={c._id} className="bg-gray-100 text-gray-800 px-2 py-1 rounded">
-                {c.name}
-              </span>
-            ))}
+          <RichTextEditor value={content} onChange={setContent} placeholder="Write your thoughts here..." />
+
+          {/* collaborator section */}
+          <div className="mt-8 border-t border-gray-100 dark:border-gray-700 pt-8">
+            {isOwner ? (
+              <CollaboratorSelect 
+                api={api} 
+                collaborators={collaborators} 
+                setCollaborators={setCollaborators} 
+              />
+            ) : (
+              collaborators.length > 0 && (
+                <div className="mb-4">
+                  <label className="block mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Collaborators
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {collaborators.map((c) => (
+                      <span key={c._id} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-600">
+                        {c.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
-      )}
-
-      <button
-        onClick={handleSubmit}
-        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-      >
-        Save Note
-      </button>
+      </main>
     </div>
   );
 }
