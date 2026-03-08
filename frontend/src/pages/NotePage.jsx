@@ -5,7 +5,7 @@ import RichTextEditor from "../components/RichTextEditor";
 import CollaboratorSelect from "../components/CollaboratorSelect";
 
 function NotePage() {
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = id !== "new";
@@ -13,6 +13,7 @@ function NotePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [collaborators, setCollaborators] = useState([]);
+  const [noteOwner, setNoteOwner] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -23,6 +24,7 @@ function NotePage() {
           setTitle(data.note.title);
           setContent(data.note.content);
           setCollaborators(data.note.collaborators || []);
+          setNoteOwner(data.note.owner._id);
         } catch (err) {
           setError(err.response?.data?.message || "Failed to fetch note");
         }
@@ -53,6 +55,8 @@ function NotePage() {
     }
   };
 
+  const isOwner = !isEditMode || noteOwner === user?._id;
+
   return (
     <div className="p-4">
       <h1>{id === "new" ? "Add New Note" : "Edit Note"}</h1>
@@ -68,11 +72,26 @@ function NotePage() {
 
       <RichTextEditor value={content} onChange={setContent} />
 
-      <CollaboratorSelect 
-        api={api} 
-        collaborators={collaborators} 
-        setCollaborators={setCollaborators} 
-      />
+      {isOwner && (
+        <CollaboratorSelect 
+          api={api} 
+          collaborators={collaborators} 
+          setCollaborators={setCollaborators} 
+        />
+      )}
+
+      {!isOwner && collaborators.length > 0 && (
+        <div className="mb-4">
+          <label className="block mb-2 font-medium">Collaborators</label>
+          <div className="flex flex-wrap gap-2">
+            {collaborators.map((c) => (
+              <span key={c._id} className="bg-gray-100 text-gray-800 px-2 py-1 rounded">
+                {c.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <button
         onClick={handleSubmit}
