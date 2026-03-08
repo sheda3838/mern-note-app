@@ -57,8 +57,8 @@ export const getNoteById = async (req, resp) => {
 
     //check permissions (user should be at least an owner or a collobarator)
     if (
-      note.owner.toString() !== userId &&
-      !note.collaborators.some((id) => id.toString() === userId)
+      note.owner._id.toString() !== userId &&
+      !note.collaborators.some((collab) => collab._id.toString() === userId)
     ) {
       return resp.status(403).json({ message: "Not authorized" });
     }
@@ -196,13 +196,6 @@ export const removeCollaborator = async (req, resp) => {
 
     if (!note) {
       return resp.status(404).json({ message: "Note not found" });
-    }
-
-    //only owner can remove collaborators
-    if (note.owner.toString() !== userId) {
-      return resp
-        .status(403)
-        .json({ message: "Only the owner can remove collaborators" });
     }
 
     note.collaborators = note.collaborators.filter(
