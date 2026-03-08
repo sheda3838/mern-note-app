@@ -36,6 +36,13 @@ function NotePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const plainTextContent = content.replace(/<[^>]*>?/gm, "").trim();
+
+    if (!title.trim() || !plainTextContent) {
+      setError("Title or content cannot be empty.");
+      return;
+    }
+
     const payload = {
       title,
       content,
