@@ -27,7 +27,9 @@ export const getNotes = async (req, resp) => {
     //notes owned by user OR where user is a collaborator
     const notes = await Note.find({
       $or: [{ owner: userId }, { collaborators: userId }],
-    }).sort({ updatedAt: -1 }); // newest first
+    })
+      .populate("owner", "name")
+      .sort({ updatedAt: -1 }); // newest first
 
     if (notes.length === 0)
       return resp.status(200).json({ success: true, message: "No notes found", data: { notes: [] } });
@@ -144,7 +146,9 @@ export const searchNotes = async (req, resp) => {
         { $text: { $search: query } },
         { $or: [{ owner: userId }, { collaborators: userId }] },
       ],
-    }).sort({ updatedAt: -1 });
+    })
+      .populate("owner", "name")
+      .sort({ updatedAt: -1 });
 
     resp.status(200).json({ success: true, message: "Notes fetched successfully", data: { notes } });
   } catch (error) {

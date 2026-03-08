@@ -19,10 +19,10 @@ function DashboardPage() {
       const notes = data.data.notes || [];
 
       // split My Notes and Shared Notes
-      const my = notes.filter((note) => note.owner.toString() === user._id);
+      const my = notes.filter((note) => note.owner._id.toString() === user._id);
       const shared = notes.filter(
         (note) =>
-          note.owner.toString() !== user._id &&
+          note.owner._id.toString() !== user._id &&
           note.collaborators.includes(user._id),
       );
 
@@ -76,10 +76,10 @@ function DashboardPage() {
       const notes = data.data.notes || [];
 
       // Split into My Notes and Shared Notes like before
-      const my = notes.filter((note) => note.owner.toString() === user._id);
+      const my = notes.filter((note) => note.owner._id.toString() === user._id);
       const shared = notes.filter(
         (note) =>
-          note.owner.toString() !== user._id &&
+          note.owner._id.toString() !== user._id &&
           note.collaborators.includes(user._id),
       );
 

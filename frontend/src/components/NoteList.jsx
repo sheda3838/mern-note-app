@@ -7,7 +7,7 @@ function NoteList({ notes, onDelete, onLeave, currentUserId }) {
   }
 
   return (
-    <div>
+    <div className="flex flex-wrap gap-6 justify-center md:justify-start">
       {notes.map((note) => (
         <NoteCard
           key={note._id}
