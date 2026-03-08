@@ -1,3 +1,102 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* custom react quill dark mode support */
+.quill-Custom-Wrapper .ql-toolbar.ql-snow {
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  background-color: #f9fafb;
+  transition: all 0.2s ease-in-out;
+}
+
+.quill-Custom-Wrapper .ql-container.ql-snow {
+  border: none;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  min-height: 250px;
+}
+
+.quill-Custom-Wrapper .ql-editor {
+  min-height: 250px;
+}
+
+/* dark mode overrides */
+.dark .quill-Custom-Wrapper .ql-toolbar.ql-snow {
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
+}
+
+.dark .quill-Custom-Wrapper .ql-container.ql-snow {
+  color: #f9fafb;
+}
+
+.dark .quill-Custom-Wrapper .ql-snow .ql-stroke {
+  stroke: #d1d5db;
+}
+
+.dark .quill-Custom-Wrapper .ql-snow .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-stroke.ql-fill {
+  fill: #d1d5db;
+}
+
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button:hover .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button:hover .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button:focus .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button:focus .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button.ql-active .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button:hover .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button:hover .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button:focus .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button:focus .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button.ql-active .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button.ql-active .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter {
+  stroke: #60a5fa;
+}
+
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button:hover .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button:hover .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button:focus .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button:focus .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar button.ql-active .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar button.ql-active .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-label:hover .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-item:hover .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-item:hover .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-fill,
+.dark .quill-Custom-Wrapper .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-fill {
+  fill: #60a5fa;
+}
+
+.dark .quill-Custom-Wrapper .ql-snow .ql-picker {
+  color: #d1d5db;
+}
+
+.dark .quill-Custom-Wrapper .ql-snow .ql-picker-options {
+  background-color: #1f2937;
+  border-color: #374151;
+}
