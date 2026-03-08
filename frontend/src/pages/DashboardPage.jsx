@@ -35,6 +35,19 @@ function DashboardPage() {
     fetchNotes();
   }, [api, user]);
 
+  const handleDelete = async (noteId) => {
+  try {
+    //remove from frontend first
+    setMyNotes(myNotes.filter((n) => n._id !== noteId));
+
+    //call backend to delete
+    await api.delete(`/note/${noteId}`);
+  } catch (err) {
+    console.log(err);
+    setError(err.response?.data?.message || "Failed to delete note");
+  }
+};
+
   return (
     <div>
       <h1>Dashboard</h1>
@@ -50,7 +63,7 @@ function DashboardPage() {
       <section>
         <h2>My Notes</h2>
         {myNotes.length !== 0 ? (
-          <NoteList notes={myNotes} />
+          <NoteList notes={myNotes} onDelete={handleDelete} currentUserId={user._id}  />
         ) : (
           <p>My notes are empty</p>
         )}
@@ -59,7 +72,7 @@ function DashboardPage() {
       <section>
         <h2>Shared Notes</h2>
         {sharedNotes.length !== 0 ? (
-          <NoteList notes={sharedNotes} />
+          <NoteList notes={sharedNotes} onDelete={handleDelete} currentUserId={user._id}  />
         ) : (
           <p>Shared notes are empty</p>
         )}

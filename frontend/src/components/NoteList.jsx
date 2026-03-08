@@ -1,7 +1,7 @@
 import React from "react";
 import NoteCard from "./NoteCard";
 
-function NoteList({ notes }) {
+function NoteList({ notes, onDelete, currentUserId }) {
   if (!notes || notes.length === 0) {
     return <p>No notes found.</p>;
   }
@@ -9,7 +9,12 @@ function NoteList({ notes }) {
   return (
     <div>
       {notes.map((note) => (
-        <NoteCard key={note._id} note={note} />
+        <NoteCard
+          key={note._id}
+          note={note}
+          onDelete={onDelete}
+          currentUserId={currentUserId}
+        />
       ))}
     </div>
   );
