@@ -23,6 +23,7 @@ function NoteCard({ note, onDelete, onLeave, currentUserId }) {
       <p>{snippet}</p>
       <span>Collaborators: {note.collaborators?.length || 0}</span>
       <p>Last Update: {new Date(note.updatedAt).toLocaleString()}</p>
+      {isOwner && <p>Owner: {note.owner.name}</p>}
       <div>
         <span>
           <button
