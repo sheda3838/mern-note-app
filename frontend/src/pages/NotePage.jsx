@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
@@ -8,17 +8,41 @@ function NotePage() {
   const { api } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
+  const isEditMode = id !== "new";
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [collaborators, setCollaborators] = useState([]);
   const [error, setError] = useState("");
 
-  const handleSave = async () => {
+  useEffect(() => {
+    if (isEditMode) {
+      const fetchNote = async () => {
+        try {
+          const { data } = await api.get(`/note/${id}`);
+          setTitle(data.note.title);
+          setContent(data.note.content);
+          setCollaborators(data.note.collaborators || []);
+        } catch (err) {
+          setError(err.response?.data?.message || "Failed to fetch note");
+        }
+      };
+      fetchNote();
+    }
+  }, [id, isEditMode, api]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const payload = { title, content, collaborators: [] };
-      await api.post("/note/", payload);
-      navigate("/dashboard");
+      if (isEditMode) {
+        await api.patch(`/note/${id}`, { title, content });
+      } else {
+        await api.post("/note/", { title, content });
+      }
+
+      navigate("/dashboard"); // go back after success
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to create note");
+      setError(err.response?.data?.message || "Failed to save note");
     }
   };
 
@@ -43,7 +67,7 @@ function NotePage() {
       />
 
       <button
-        onClick={handleSave}
+        onClick={handleSubmit}
         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
       >
         Save Note

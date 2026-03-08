@@ -58,7 +58,7 @@ export const getNoteById = async (req, resp) => {
     //check permissions (user should be at least an owner or a collobarator)
     if (
       note.owner.toString() !== userId &&
-      !note.collaborators.includes(userId)
+      !note.collaborators.some((id) => id.toString() === userId)
     ) {
       return resp.status(403).json({ message: "Not authorized" });
     }
@@ -82,7 +82,7 @@ export const updateNote = async (req, resp) => {
 
     if (
       note.owner.toString() !== userId &&
-      !note.collaborators.includes(userId)
+      !note.collaborators.some((id) => id.toString() === userId)
     ) {
       return resp.status(403).json({ message: "Not authorized" });
     }
