@@ -74,7 +74,7 @@ export const getNoteById = async (req, resp) => {
 export const updateNote = async (req, resp) => {
   const userId = req.user.id;
   const noteId = req.params.id;
-  const { title, content } = req.body;
+  const { title, content, collaborators } = req.body;
 
   try {
     const note = await Note.findById(noteId);
@@ -89,6 +89,7 @@ export const updateNote = async (req, resp) => {
 
     if (title) note.title = title;
     if (content) note.content = content;
+    if (collaborators !== undefined) note.collaborators = collaborators;
 
     await note.save();
 
