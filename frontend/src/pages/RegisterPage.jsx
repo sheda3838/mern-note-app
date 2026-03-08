@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function RegisterPage() {
   const { api, login } = useAuth();
@@ -7,6 +8,7 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,14 +50,16 @@ function RegisterPage() {
         />
 
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           value={password}
           placeholder="Enter your password"
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <input type="checkbox" name="showPassword" onChange={(e) => setShowPassword(e.target.checked)} />Show Password
 
         <button type="submit">Register</button>
+        <p>Already have an account? <Link to="/login">Login</Link></p>
       </form>
     </div>
   );

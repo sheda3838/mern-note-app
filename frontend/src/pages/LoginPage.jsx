@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function LoginPage() {
   const { login, api } = useAuth(); //get login function and axios instance
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,13 +32,15 @@ function LoginPage() {
           required
         />
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <input type="checkbox" name="showPassword" onChange={(e) => setShowPassword(e.target.checked)} />Show Password
         <button type="submit">Submit</button>
+        <p>Don't have an account? <Link to="/register">Register</Link></p>
       </form>
     </div>
   );
