@@ -34,7 +34,6 @@ function CollaboratorSelect({ api, collaborators, setCollaborators }) {
     <div ref={containerRef} className="mb-4 relative">
       <label className="block mb-2 font-medium">Collaborators</label>
 
-      {/* Selected Collaborators Tags */}
       <div className="flex flex-wrap gap-2 mb-2">
         {collaborators.map((c) => (
           <span
@@ -57,7 +56,6 @@ function CollaboratorSelect({ api, collaborators, setCollaborators }) {
         ))}
       </div>
 
-      {/* Search input */}
       <input
         type="text"
         placeholder="Search and add collaborators..."

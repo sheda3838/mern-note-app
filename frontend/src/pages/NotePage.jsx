@@ -14,6 +14,7 @@ function NotePage() {
   const [content, setContent] = useState("");
   const [collaborators, setCollaborators] = useState([]);
   const [noteOwner, setNoteOwner] = useState(null);
+  const [originalNote, setOriginalNote] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -21,10 +22,19 @@ function NotePage() {
       const fetchNote = async () => {
         try {
           const { data } = await api.get(`/note/${id}`);
-          setTitle(data.note.title);
-          setContent(data.note.content);
-          setCollaborators(data.note.collaborators || []);
-          setNoteOwner(data.note.owner._id);
+          const fetchedNote = data.note;
+          setTitle(fetchedNote.title);
+          setContent(fetchedNote.content);
+          
+          const collabIds = fetchedNote.collaborators || [];
+          setCollaborators(collabIds);
+          setNoteOwner(fetchedNote.owner._id);
+          
+          setOriginalNote({
+            title: fetchedNote.title,
+            content: fetchedNote.content,
+            collaborators: collabIds.map(c => c._id),
+          });
         } catch (err) {
           setError(err.response?.data?.message || "Failed to fetch note");
         }
@@ -43,10 +53,27 @@ function NotePage() {
       return;
     }
 
+    const collabIds = collaborators.map((c) => c._id);
+
+    // Optimization: Check if nothing changed
+    if (isEditMode && originalNote) {
+      const isTitleSame = title === originalNote.title;
+      const isContentSame = content === originalNote.content;
+      const isCollabsSame =
+        collabIds.length === originalNote.collaborators.length &&
+        collabIds.every((id) => originalNote.collaborators.includes(id));
+
+      if (isTitleSame && isContentSame && isCollabsSame) {
+        // Nothing changed, return to dashboard immediately
+        navigate("/dashboard");
+        return;
+      }
+    }
+
     const payload = {
       title,
       content,
-      collaborators: collaborators.map((c) => c._id),
+      collaborators: collabIds,
     };
 
     try {
