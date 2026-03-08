@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import NoteList from "../components/NoteList";
+import { useNavigate } from "react-router-dom";
 
 function DashboardPage() {
   const { api, user } = useAuth();
@@ -8,6 +9,7 @@ function DashboardPage() {
   const [myNotes, setMyNotes] = useState([]);
   const [sharedNotes, setSharedNotes] = useState([]);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -37,6 +39,13 @@ function DashboardPage() {
     <div>
       <h1>Dashboard</h1>
       {error && <p>{error}</p>}
+
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        onClick={() => navigate("/note/new")}
+      >
+        + Add Note
+      </button>
 
       <section>
         <h2>My Notes</h2>
