@@ -198,6 +198,22 @@ export const removeCollaborator = async (req, resp) => {
       return resp.status(404).json({ message: "Note not found" });
     }
 
+    // Only owner can remove ANY collaborator, or a collaborator can remove THEMSELVES
+    if (
+      note.owner.toString() !== userId &&
+      userId !== collaboratorId
+    ) {
+      return resp
+        .status(403)
+        .json({ message: "Not authorized to remove this collaborator" });
+    }
+
+    // Also ensuring they can't remove someone else if they aren't owner
+    if (note.owner.toString() !== userId && userId !== collaboratorId) {
+        return resp.status(403).json({ message: "You can only remove yourself."});
+    }
+
+
     note.collaborators = note.collaborators.filter(
       (id) => id.toString() !== collaboratorId,
     );

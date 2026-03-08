@@ -4,7 +4,7 @@ import NoteList from "../components/NoteList";
 import { useNavigate } from "react-router-dom";
 
 function DashboardPage() {
-  const { api, user } = useAuth();
+  const { api, user , logout} = useAuth();
 
   const [myNotes, setMyNotes] = useState([]);
   const [sharedNotes, setSharedNotes] = useState([]);
@@ -50,6 +50,23 @@ function DashboardPage() {
     }
   };
 
+  const handleLeave = async (noteId) => {
+    try {
+      //remove from frontend first
+      setSharedNotes(sharedNotes.filter((n) => n._id !== noteId));
+
+      //call backend to remove oneself as collaborator
+      await api.delete(`/note/${noteId}/collaborators`, {
+        data: { collaboratorId: user._id },
+      });
+    } catch (err) {
+      console.log(err);
+      setError(err.response?.data?.message || "Failed to leave note");
+      // Optionally fetch notes again if it fails to revert optimistic update
+      fetchNotes();
+    }
+  };
+
   const handleSearch = async () => {
     try {
       if (!searchQuery) return; // optional: ignore empty searches
@@ -82,6 +99,7 @@ function DashboardPage() {
     <div>
       <h1>Dashboard</h1>
       {error && <p>{error}</p>}
+      <button onClick={logout} className="bg-red-300 p-2 m-2">Logout</button>
 
       <input
         type="text"
@@ -125,6 +143,7 @@ function DashboardPage() {
           <NoteList
             notes={sharedNotes}
             onDelete={handleDelete}
+            onLeave={handleLeave}
             currentUserId={user._id}
           />
         ) : (

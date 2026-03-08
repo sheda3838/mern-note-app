@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function NoteCard({ note, onDelete, currentUserId }) {
+function NoteCard({ note, onDelete, onLeave, currentUserId }) {
   const navigate = useNavigate();
   const isOwner = note.owner.toString() === currentUserId;
 
@@ -33,12 +33,19 @@ function NoteCard({ note, onDelete, currentUserId }) {
           </button>
         </span>
         <span>
-          {isOwner && (
+          {isOwner ? (
             <button
-              className="bg-red-500 text-white px-2 py-1 rounded"
+              className="bg-red-500 text-white px-2 py-1 rounded ml-2"
               onClick={() => onDelete(note._id)}
             >
               Delete
+            </button>
+          ) : (
+            <button
+              className="bg-yellow-500 text-white px-2 py-1 rounded ml-2"
+              onClick={() => onLeave && onLeave(note._id)}
+            >
+              Leave
             </button>
           )}
         </span>
